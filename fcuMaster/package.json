@@ -1,0 +1,7 @@
+{
+    "name": "fcu master",
+    "version": "1.0.0",
+    "description": "configurator for fcu master",
+    "main": "./main.js"
+  }
+  

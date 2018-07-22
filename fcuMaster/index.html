@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FCU Master</title>
+</head>
+<body>
+
+<div>
+<!--All of the Node.js APIs are available in this renderer process. -->
+We are using Node.js <script>document.write(process.versions.node)</script>,
+Chromium <script>document.write(process.versions.chrome)</script>,
+and Electron <script>document.write(process.versions.electron)</script>.
+</div>
+
+<div>
+<ul id='portList' ></ul>
+</div>
+
+<div>
+  <p id="select-device-name" ></p>
+  <button id="btn-connect" disabled=true >connect</button>
+</div>
+
+
+<div>
+  <div id="fire-pwm">
+    <p>출력 전압(%)</p>
+    <input>
+    <button class="btn-save">save</button>
+  </div>
+
+
+  <div id="cutoff-time">
+    <p>강하 시점(micro sec)</p>
+    <input id="inp-cuofftime">
+    <button class="btn-save">save</button>
+  </div>
+
+
+  <div id="downpluse-term">
+    <p>쿨타임(micro sec)</p>
+    <input id="inp-downpluse-term" >
+    <button class="btn-save">save</button>
+  </div>
+
+  <div id="stepping-term">
+    <p>프론트스테핑 타이밍</p>
+    <input >
+    <button class="btn-save">save</button>
+  </div>
+
+  <div>
+    <button id="btn-default" > 설정 초기화 </button>
+  </div>
+
+</div>
+
+<script src="index.js">
+
+</script>
+</body>
+</html>
