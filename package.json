@@ -8,10 +8,14 @@
   },
   "devDependencies": {
     "electron": "^2.0.5",
+    "electron-builder": "^20.26.0",
     "electron-rebuild": "^1.8.1"
   },
   "scripts": {
     "fcuMaster": "./node_modules/.bin/electron ./fcuMaster",
+    "fcuTester": "./node_modules/.bin/electron ./fcuTester",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,4 +33,5 @@
     "url": "https://github.com/gbox3d/fcuUtils/issues"
   },
   "homepage": "https://github.com/gbox3d/fcuUtils#readme"
+  
 }

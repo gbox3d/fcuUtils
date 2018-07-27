@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>FCU Master</title>
+</head>
+
+<body>
+
+
+  <div>
+    <ul id='portList'></ul>
+  </div>
+
+  <div>
+    <p id="select-device-name"></p>
+    <button id="btn-connect" disabled=true>connect</button>
+    <button id="btn-close" disabled=true>close</button>
+  </div>
+
+  <div id="config-data" >
+
+  </div>
+
+
+  <div>
+    <div id="fire-counter">
+      <p></p>
+      <input>
+      <button class="btn-play-game">play game</button>
+    </div>
+
+    
+
+  </div>
+
+
+  <div style="display: none">
+    <!--All of the Node.js APIs are available in this renderer process. -->
+    We are using Node.js
+    <script>document.write(process.versions.node)</script>, Chromium
+    <script>document.write(process.versions.chrome)</script>, and Electron
+    <script>document.write(process.versions.electron)</script>.
+  </div>
+
+  <script src="index.js">
+
+  </script>
+</body>
+
+</html>

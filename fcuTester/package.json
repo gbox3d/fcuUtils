@@ -1,7 +1,7 @@
 {
-    "name": "fcuMaster",
+    "name": "fcuTester",
     "version": "1.0.0",
-    "description": "configurator for fcu master",
+    "description": "",
     "main": "./main.js",
     "dependencies": {
       "serialport": "^6.2.2"
