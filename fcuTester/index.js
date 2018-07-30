@@ -72,6 +72,21 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
     
     console.log(data);
     let _objres = JSON.parse(data.toString());
+
+    if(_objres.p1 == "rd") {
+      document.querySelector("#fire-counter input").value = _objres.p2
+    }
+    else if(_objres.r == "fire") {
+      document.querySelector("#fire-counter input").value = _objres.p1
+    }
+    else if(_objres.r == "cr") {
+      document.querySelector("#max-bullet input").value = _objres.data[3]
+    }
+    else if(_objres.mxct) {
+      document.querySelector("#max-bullet input").value = _objres.mxct
+    }
+   
+
     if(theApp.resCallback)
       theApp.resCallback(_objres);
   });
@@ -107,13 +122,7 @@ document.querySelector("#fire-counter .btn-play-game").addEventListener('click',
   let _cmd = JSON.stringify( {c:"cm",p1:"playGame"} );
   theApp.resBuffer = "";
   theApp.resCallback = function (_objres) {
-    console.log(_objres)
-    if(_objres.p1 == "rd") {
-      document.querySelector("#fire-counter input").value = _objres.p2
-    }
-    else if(_objres.r == "fire") {
-      document.querySelector("#fire-counter input").value = _objres.p1
-    }
+    
     
   }
 
@@ -121,6 +130,28 @@ document.querySelector("#fire-counter .btn-play-game").addEventListener('click',
     //alert("save success")
   });
 })
+
+document.querySelector("#max-bullet button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "stmx", 
+    p2:  parseInt( document.querySelector("#max-bullet input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+  console.log(_cmd);
+
+  // theApp.resBuffer = "";
+  // theApp.resCallback = function (_objres) {
+  //   console.log(_objres);
+  // }
+
+  document.querySelector("#max-bullet input").value = 0;
+  theApp.spObj.write(_cmd, function(err) {
+    //alert("save success")
+  });
+
+});
 
 
 
