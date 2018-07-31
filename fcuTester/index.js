@@ -81,9 +81,14 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
     }
     else if(_objres.r == "cr") {
       document.querySelector("#max-bullet input").value = _objres.data[3]
+      document.querySelector("#fpw input").value = _objres.data[6]
+      document.querySelector("#cppc input").value = _objres.data[4]
     }
     else if(_objres.mxct) {
       document.querySelector("#max-bullet input").value = _objres.mxct
+    }
+    else if(_objres.tm != undefined) {
+      document.querySelector("#info-pannel input.fct").value = parseInt(_objres.tm) / 1000
     }
    
 
@@ -119,11 +124,10 @@ function _sendCmd(_cmd)
 }
 
 document.querySelector("#fire-counter .btn-play-game").addEventListener('click',function (evt) {
-  let _cmd = JSON.stringify( {c:"cm",p1:"playGame"} );
+  let _cmd = JSON.stringify( {c:"cm",p1:"readyToPlay"} );
+  _cmd += JSON.stringify( {c:"cm",p1:"playGame"} );
   theApp.resBuffer = "";
   theApp.resCallback = function (_objres) {
-    
-    
   }
 
   theApp.spObj.write(_cmd, function(err) {
@@ -140,16 +144,36 @@ document.querySelector("#max-bullet button").addEventListener('click', function 
   );
   _cmd += JSON.stringify({c:"svcfg"});
   console.log(_cmd);
-
-  // theApp.resBuffer = "";
-  // theApp.resCallback = function (_objres) {
-  //   console.log(_objres);
-  // }
-
   document.querySelector("#max-bullet input").value = 0;
   theApp.spObj.write(_cmd, function(err) {
-    //alert("save success")
+
   });
+
+});
+
+document.querySelector("#fpw button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "fpw", 
+    p2:  parseInt( document.querySelector("#fpw input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
+document.querySelector("#cppc button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "cppc", 
+    p2:  parseInt( document.querySelector("#cppc input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
 
 });
 
