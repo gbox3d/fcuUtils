@@ -77,9 +77,15 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
 
   let parser  = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
   parser.on('data', function(data) {
-    //console.log("parser");
-    //console.log(data.toString());
+    
     let _objres = JSON.parse(data.toString());
+
+    if(_objres.tm != undefined) {
+      document.querySelector("#device-info .fct").innerText =  _objres.tm / 1000;
+    }
+
+
+
     if(theApp.resCallback)
       theApp.resCallback(_objres);
   });
@@ -93,32 +99,7 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
 
     //데이터 읽기
     this.on('data', function(data) {
-      //console.log(data.toString());
-
-      //theApp.resCallback(data);
-
-      /*for(var i= 0;i<data.length;i++) {
-        if(data[i] == 0x0d) {
-          try {
-            console.log(theApp.resBuffer);
-            let _objres = JSON.parse(theApp.resBuffer);
-            console.log(_objres);
-
-            theApp.resCallback(_objres);
-
-          }
- 
-          catch(e) {
-            console.log(e);
-          }
-        }
-        else {
-          theApp.resBuffer += String.fromCharCode(data[i] );
-
-        }
-      }*/
-
-
+     
     });
 
     theApp.spObj = serialportObj;
