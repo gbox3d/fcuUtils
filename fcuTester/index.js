@@ -83,6 +83,11 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
       document.querySelector("#max-bullet input").value = _objres.data[3]
       document.querySelector("#fpw input").value = _objres.data[6]
       document.querySelector("#cppc input").value = _objres.data[4]
+
+      document.querySelector("#pluseup input").value = _objres.data[0]
+      document.querySelector("#plusdown input").value = _objres.data[1]
+      document.querySelector("#semiauto input").value = _objres.data[7]
+      document.querySelector("#cth input").value = _objres.data[5]
     }
     else if(_objres.mxct) {
       document.querySelector("#max-bullet input").value = _objres.mxct
@@ -176,6 +181,62 @@ document.querySelector("#cppc button").addEventListener('click', function (evt) 
   theApp.spObj.write(_cmd, function(err) {});
 
 });
+
+
+document.querySelector("#pluseup button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "pu", 
+    p2:  parseInt( document.querySelector("#pluseup input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
+
+document.querySelector("#plusdown button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "pd", 
+    p2:  parseInt( document.querySelector("#plusdown input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
+document.querySelector("#semiauto button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "msa", 
+    p2:  parseInt( document.querySelector("#semiauto input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
+
+document.querySelector("#cth button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "cth", 
+    p2:  parseInt( document.querySelector("#cth input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
 
 
 
