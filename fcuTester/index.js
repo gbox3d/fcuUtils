@@ -76,6 +76,9 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
     if(_objres.p1 == "rd") {
       document.querySelector("#fire-counter input").value = _objres.p2
     }
+    else if(_objres.r == "version") {
+      document.querySelector("#info-pannel .version").innerText = _objres.p1
+    }
     else if(_objres.r == "fire") {
       document.querySelector("#fire-counter input").value = _objres.p1
     }
@@ -232,6 +235,23 @@ document.querySelector("#cth button").addEventListener('click', function (evt) {
   }
   );
   _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
+document.querySelector("#system-setup .btn-default").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "clcfg"
+  }
+  );
+  //_cmd += JSON.stringify({c:"svcfg"});
+
+  theApp.resBuffer = "";
+  theApp.resCallback = function (_objres) {
+    alert(_objres.r)
+    theApp.resCallback = null;
+  }
  
   theApp.spObj.write(_cmd, function(err) {});
 

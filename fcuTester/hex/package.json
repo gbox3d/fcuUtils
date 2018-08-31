@@ -1,0 +1,12 @@
+{
+  "name": "bin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "upload" : "avrdude -Cavrdude.conf -v -patmega328p -carduino -PCOM5 -b115200 -D -Uflash:w:t5.ino.hex:i"
+  },
+  "author": "",
+  "license": "ISC"
+}
