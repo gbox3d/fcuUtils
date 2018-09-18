@@ -68,8 +68,8 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
   );
 
   let parser  = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
+
   parser.on('data', function(data) {
-    
     console.log(data);
     let _objres = JSON.parse(data.toString());
 
@@ -98,6 +98,12 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
     else if(_objres.tm != undefined) {
       document.querySelector("#info-pannel input.fct").value = parseInt(_objres.tm) / 1000
     }
+
+    //플래그값 
+    if(_objres.flag !== undefined) {
+      document.querySelector("#flag input").value =_objres.flag
+    }
+    
    
 
     if(theApp.resCallback)
@@ -232,6 +238,20 @@ document.querySelector("#cth button").addEventListener('click', function (evt) {
     c: "cs",
     p1: "cth", 
     p2:  parseInt( document.querySelector("#cth input").value)
+  }
+  );
+  _cmd += JSON.stringify({c:"svcfg"});
+ 
+  theApp.spObj.write(_cmd, function(err) {});
+
+});
+
+
+document.querySelector("#flag button").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({
+    c: "cs",
+    p1: "fv", 
+    p2:  parseInt( document.querySelector("#flag input").value)
   }
   );
   _cmd += JSON.stringify({c:"svcfg"});
