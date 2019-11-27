@@ -1,3 +1,10 @@
+
+### 프로잭트 설치법
+만약 serialport 가 설피되지않으면 package.json에 나와 있는 버전을 무시하고 최신버전으로 설치한다.  
+electron,electron-rebuild 도 마찬가지이다.  
+
+
+
 ### 릴리즈 만드는법
 
 * 빈폴더를 하나 생성한다 

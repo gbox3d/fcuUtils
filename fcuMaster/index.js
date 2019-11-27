@@ -17,16 +17,30 @@ var theApp = {
   }
 }
 
-serialport.list(function (err, ports) {
-  ports.forEach(function(port) {
-    let _li = document.createElement('li');
-    _li.innerText = port.comName + "(" + port.manufacturer + ")";
-    _li.comName = port.comName;
+serialport.list().then(
+  ports => {
+    ports.forEach(port=> {
+      let _li = document.createElement('li');
+      _li.innerText = port.comName + "(" + port.manufacturer + ")";
+      _li.comName = port.comName;
 
-    document.querySelector('#portList').appendChild(_li);
+      document.querySelector('#portList').appendChild(_li);
 
-  });
-});
+    })
+  },
+  err => console.error(err)
+)
+
+// serialport.list(function (err, ports) {
+//   ports.forEach(function(port) {
+//     let _li = document.createElement('li');
+//     _li.innerText = port.comName + "(" + port.manufacturer + ")";
+//     _li.comName = port.comName;
+
+//     document.querySelector('#portList').appendChild(_li);
+
+//   });
+// });
 
 document.querySelector("#portList").addEventListener('click',function (evt) {
 
