@@ -7,12 +7,12 @@ const Readline = require('@serialport/parser-readline')
 console.log(serialport);
 
 var theApp = {
-  spConfig : {
-    baudRate:115200,
+  spConfig: {
+    baudRate: 115200,
     parser: new (serialport.parsers).Readline("\r\n") //개행문자기준으로 마샬링해주기
   },
-  resBuffer : "",
-  resCallback : function () {
+  resBuffer: "",
+  resCallback: function () {
 
   }
 }
@@ -20,7 +20,7 @@ var theApp = {
 
 serialport.list().then(
   ports => {
-    ports.forEach(port=> {
+    ports.forEach(port => {
       let _li = document.createElement('li');
       _li.innerText = port.comName + "(" + port.manufacturer + ")";
       _li.comName = port.comName;
@@ -43,7 +43,7 @@ serialport.list().then(
 //   });
 // });
 
-document.querySelector("#portList").addEventListener('click',function (evt) {
+document.querySelector("#portList").addEventListener('click', function (evt) {
 
   console.log(evt.target.comName);
   theApp.SerialDeviceName = evt.target.comName;
@@ -53,83 +53,91 @@ document.querySelector("#portList").addEventListener('click',function (evt) {
 })
 
 
-function _dumpConfigAll()
-{
+function _dumpConfigAll() {
   theApp.resBuffer = "";
   theApp.resCallback = function (_objres) {
     console.log(_objres)
-
     document.querySelector("#config-data").innerText = JSON.stringify(_objres)
-
     theApp.resCallback = null;
-
   }
 
-  let _cmd = {c:"cr"};
-  this.write(JSON.stringify(_cmd), function(err) {
-    if(err) console.log(err);
-    
+  let _cmd = { c: "cr" };
+  theApp.spObj.write(JSON.stringify(_cmd), function (err) {
+    if (err) console.log(err);
+
   });
 
 }
 
 
-document.querySelector("#btn-connect").addEventListener('click',function(evt) {
+document.querySelector("#btn-connect").addEventListener('click', function (evt) {
 
   this.disabled = true;
 
   let serialportObj = new serialport(
-    theApp.SerialDeviceName , theApp.spConfig
+    theApp.SerialDeviceName, theApp.spConfig
   );
 
-  let parser  = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
+  let parser = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
 
-  parser.on('data', function(data) {
+  parser.on('data', function (data) {
     console.log(data);
-    let _objres = JSON.parse(data.toString());
+    try {
 
-    if(_objres.p1 == "rd") {
-      document.querySelector("#fire-counter input").value = _objres.p2
-    }
-    else if(_objres.r == "version") {
-      document.querySelector("#info-pannel .version").innerText = _objres.p1
-    }
-    else if(_objres.r == "fire") {
-      document.querySelector("#fire-counter input").value = _objres.p1
-    }
-    else if(_objres.r == "cr") {
-      document.querySelector("#max-bullet input").value = _objres.data[3]
-      document.querySelector("#fpw input").value = _objres.data[6]
-      document.querySelector("#cppc input").value = _objres.data[4]
+      let _objres = JSON.parse(data.toString());
 
-      document.querySelector("#pluseup input").value = _objres.data[0]
-      document.querySelector("#plusdown input").value = _objres.data[1]
-      document.querySelector("#semiauto input").value = _objres.data[7]
-      document.querySelector("#cth input").value = _objres.data[5]
+      if (_objres.p1 == "rd") {
+        document.querySelector("#fire-counter input").value = _objres.p2
+      }
+      else if (_objres.r == "version") {
+        document.querySelector("#info-pannel .version").innerText = _objres.p1
+      }
+      else if (_objres.r == "fire") {
+        document.querySelector("#fire-counter input").value = _objres.p1
+      }
+      else if (_objres.r == "cr") {
+        document.querySelector("#max-bullet input").value = _objres.data[3]
+        document.querySelector("#fpw input").value = _objres.data[6]
+        document.querySelector("#cppc input").value = _objres.data[4]
+
+        document.querySelector("#pluseup input").value = _objres.data[0]
+        document.querySelector("#plusdown input").value = _objres.data[1]
+        document.querySelector("#semiauto input").value = _objres.data[7]
+        document.querySelector("#cth input").value = _objres.data[5]
+      }
+      else if (_objres.r == "svcfg") {
+        alert("ok");
+      }
+      // else if(_objres.mxct) {
+      //   document.querySelector("#max-bullet input").value = _objres.mxct
+      // }
+      // else if(_objres.tm != undefined) {
+      //   document.querySelector("#info-pannel input.fct").value = parseInt(_objres.tm) / 1000
+      // }
+
+      // //플래그값 
+      // if(_objres.flag !== undefined) {
+      //   document.querySelector("#flag input").value =_objres.flag
+      // }
+
+      if (theApp.resCallback)
+        theApp.resCallback(_objres);
+
     }
-    else if(_objres.mxct) {
-      document.querySelector("#max-bullet input").value = _objres.mxct
-    }
-    else if(_objres.tm != undefined) {
-      document.querySelector("#info-pannel input.fct").value = parseInt(_objres.tm) / 1000
+    catch (e) {
+      console.log(e);
+
     }
 
-    //플래그값 
-    if(_objres.flag !== undefined) {
-      document.querySelector("#flag input").value =_objres.flag
-    }
-    
-   
-
-    if(theApp.resCallback)
-      theApp.resCallback(_objres);
   });
 
-  serialportObj.on("open", function(evt) {
+  serialportObj.on("open", function (evt) {
 
     console.log('open at baudrate :' + theApp.spConfig.baudRate);
 
-    setTimeout(_dumpConfigAll.bind(this),2000)
+    setTimeout( function() {
+      _dumpConfigAll()
+    }, 3000)
 
     theApp.spObj = serialportObj;
 
@@ -137,29 +145,28 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
 });
 
 
-function _sendCmd(_cmd)
-{
-  
+function _sendCmd(_cmd) {
+
   //console.log(_cmd)
   theApp.resBuffer = "";
   theApp.resCallback = function (_objres) {
     console.log(_objres)
   }
 
-  theApp.spObj.write(_cmd, function(err) {
+  theApp.spObj.write(_cmd, function (err) {
     //alert("save success")
   });
 
 }
 
-document.querySelector("#fire-counter .btn-play-game").addEventListener('click',function (evt) {
-  let _cmd = JSON.stringify( {c:"cm",p1:"readyToPlay"} );
-  _cmd += JSON.stringify( {c:"cm",p1:"playGame"} );
+document.querySelector("#fire-counter .btn-play-game").addEventListener('click', function (evt) {
+  let _cmd = JSON.stringify({ c: "cm", p1: "readyToPlay" });
+  _cmd += JSON.stringify({ c: "cm", p1: "playGame" });
   theApp.resBuffer = "";
   theApp.resCallback = function (_objres) {
   }
 
-  theApp.spObj.write(_cmd, function(err) {
+  theApp.spObj.write(_cmd, function (err) {
     //alert("save success")
   });
 })
@@ -167,14 +174,14 @@ document.querySelector("#fire-counter .btn-play-game").addEventListener('click',
 document.querySelector("#max-bullet button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "stmx", 
-    p2:  parseInt( document.querySelector("#max-bullet input").value)
+    p1: "stmx",
+    p2: parseInt(document.querySelector("#max-bullet input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
+  _cmd += JSON.stringify({ c: "svcfg" });
   console.log(_cmd);
   document.querySelector("#max-bullet input").value = 0;
-  theApp.spObj.write(_cmd, function(err) {
+  theApp.spObj.write(_cmd, function (err) {
 
   });
 
@@ -183,26 +190,26 @@ document.querySelector("#max-bullet button").addEventListener('click', function 
 document.querySelector("#fpw button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "fpw", 
-    p2:  parseInt( document.querySelector("#fpw input").value)
+    p1: "fpw",
+    p2: parseInt(document.querySelector("#fpw input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
 document.querySelector("#cppc button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "cppc", 
-    p2:  parseInt( document.querySelector("#cppc input").value)
+    p1: "cppc",
+    p2: parseInt(document.querySelector("#cppc input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
@@ -210,13 +217,13 @@ document.querySelector("#cppc button").addEventListener('click', function (evt) 
 document.querySelector("#pluseup button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "pu", 
-    p2:  parseInt( document.querySelector("#pluseup input").value)
+    p1: "pu",
+    p2: parseInt(document.querySelector("#pluseup input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
@@ -224,26 +231,26 @@ document.querySelector("#pluseup button").addEventListener('click', function (ev
 document.querySelector("#plusdown button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "pd", 
-    p2:  parseInt( document.querySelector("#plusdown input").value)
+    p1: "pd",
+    p2: parseInt(document.querySelector("#plusdown input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
 document.querySelector("#semiauto button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "msa", 
-    p2:  parseInt( document.querySelector("#semiauto input").value)
+    p1: "msa",
+    p2: parseInt(document.querySelector("#semiauto input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
@@ -251,13 +258,13 @@ document.querySelector("#semiauto button").addEventListener('click', function (e
 document.querySelector("#cth button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "cth", 
-    p2:  parseInt( document.querySelector("#cth input").value)
+    p1: "cth",
+    p2: parseInt(document.querySelector("#cth input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
@@ -265,13 +272,13 @@ document.querySelector("#cth button").addEventListener('click', function (evt) {
 document.querySelector("#flag button").addEventListener('click', function (evt) {
   let _cmd = JSON.stringify({
     c: "cs",
-    p1: "fv", 
-    p2:  parseInt( document.querySelector("#flag input").value)
+    p1: "fv",
+    p2: parseInt(document.querySelector("#flag input").value)
   }
   );
-  _cmd += JSON.stringify({c:"svcfg"});
- 
-  theApp.spObj.write(_cmd, function(err) {});
+  _cmd += JSON.stringify({ c: "svcfg" });
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
 
@@ -287,10 +294,17 @@ document.querySelector("#system-setup .btn-default").addEventListener('click', f
     alert(_objres.r)
     theApp.resCallback = null;
   }
- 
-  theApp.spObj.write(_cmd, function(err) {});
+
+  theApp.spObj.write(_cmd, function (err) { });
 
 });
+
+document.querySelector("#system-setup > button.btn-save").addEventListener('click',function() {
+  console.log('save')
+  theApp.spObj.write('{"c":"svcfg"}', function (err) {
+
+  });
+})
 
 
 

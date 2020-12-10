@@ -90,16 +90,15 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
   );
 
   let parser  = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
+  
   parser.on('data', function(data) {
     
+    console.log(data)
     let _objres = JSON.parse(data.toString());
 
     if(_objres.tm != undefined) {
       document.querySelector("#device-info .fct").innerText =  _objres.tm / 1000;
     }
-
-
-
     if(theApp.resCallback)
       theApp.resCallback(_objres);
   });
