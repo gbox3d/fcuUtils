@@ -100,7 +100,8 @@ document.querySelector("#btn-connect").addEventListener('click',function(evt) {
       document.querySelector("#device-info .fct").innerText =  _objres.tm / 1000;
     }
     if(theApp.resCallback)
-      theApp.resCallback(_objres);
+      if(_objres.pu !== undefined )
+        theApp.resCallback(_objres);
   });
 
   serialportObj.on("open", function(evt) {
