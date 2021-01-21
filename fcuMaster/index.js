@@ -1,9 +1,7 @@
 const serialport = require('serialport');
-//const Delimiter = require('@serialport/parser-delimiter')
 const Readline = require('@serialport/parser-readline')
 
-
-console.log(serialport);
+// console.log(serialport);
 
 var theApp = {
     spConfig: {
