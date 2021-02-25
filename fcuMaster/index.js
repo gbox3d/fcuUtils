@@ -49,18 +49,7 @@ function _dumpConfigAll(resolve, reject) {
             _objres.result = 'ok'
             resolve(_objres)
         }
-        // let _fpw = _objres.fpw / 255
-        // document.querySelector("#fire-pwm input").value = ((_fpw.toFixed(4)) * 100).toFixed(2);
-
-        // document.querySelector("#power-down-tick input").value =  _objres.pdt / 1000;
-        // document.querySelector("#power-down-delta input").value =  _objres.pdd;
-
-        // document.querySelector("#startup-recover-tick input").value =  _objres.sta / 1000;
-
-
-        // document.querySelector("#front-stepping-term input").value =  _objres.fst / 1000;
-
-
+        
     }
 
     let _cmd = { c: "cr" };
@@ -75,18 +64,19 @@ function _dumpConfigAll(resolve, reject) {
 
 function _sendCmd(_cmd) {
 
-    theApp.spObj.write(_cmd, function (err) {
-        if (err == undefined) {
-            console.log('send cmd')
-            // resolve()
-        }
-        else {
-            // reject(err)
-            alert(err);
-
-        }
-        // alert("save success")
-    });
+    return new Promise(function (resolve, reject) {
+        theApp.spObj.write(_cmd, function (err) {
+            if (err == undefined) {
+                console.log('send cmd')
+                resolve('ok')
+            }
+            else {
+                reject(err)
+                // alert(err);
+            }
+            // alert("save success")
+        });
+    })
 
 }
 
@@ -97,6 +87,7 @@ async function _loadformDevice() {
     if (_res.result == 'ok') {
         document.querySelector("#cutoff-term input").value = _res.cth / 1000;
         document.querySelector("#downpluse-term input").value = _res.pd / 1000;
+        document.querySelector('#bullet-capacity input').value = _res.fst;
 
         document.querySelector("#btn-close").classList.remove("hide");
 
@@ -327,23 +318,33 @@ document.querySelector('#btn-save').addEventListener('click', async function (ev
     document.querySelector('#main-menu').classList.add('hide');
     
 
-    await new Promise(async (resolve, reject) => {
+    try {
+        await new Promise(async (resolve, reject) => {
 
-        theApp.resCallback = (_objres) => {
-            if (_objres.c === 'svcfg') {
-                console.log('cmd ok');
-                resolve();
+            theApp.resCallback = (_objres) => {
+                if (_objres.c === 'svcfg') {
+                    console.log('cmd ok');
+                    resolve();
+                }
             }
-        }
+    
+            let _cmd = JSON.stringify({ c: "cs", p1: "cth", p2: parseInt(document.querySelector('#cutoff-term input').value) * 1000 }) +
+                JSON.stringify({ c: "cs", p1: "pd", p2: parseInt(document.querySelector('#downpluse-term input').value) * 1000 }) + 
+                JSON.stringify({ c: "cs", p1: "fst", p2: parseInt(document.querySelector('#bullet-capacity input').value) })
+    
+            _cmd += JSON.stringify({ c: "svcfg" });
+            await _sendCmd(_cmd)
+        })
+    
+        console.log('save ok')
+        alert('save ok')
 
-        let _cmd = JSON.stringify({ c: "cs", p1: "cth", p2: parseInt(document.querySelector('#cutoff-term input').value) * 1000 }) +
-            JSON.stringify({ c: "cs", p1: "pd", p2: parseInt(document.querySelector('#downpluse-term input').value) * 1000 });
-
-        _cmd += JSON.stringify({ c: "svcfg" });
-        _sendCmd(_cmd)
-    })
-
-    console.log('save ok')
+    }
+    catch (e) {
+        alert('save err')
+        console.log(e)
+    }
+    
 
 
     document.querySelector('#hide-menu').classList.add("hide");
