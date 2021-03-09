@@ -11,6 +11,7 @@
     "electron-rebuild": "^2.3.4"
   },
   "scripts": {
+    "start": "./node_modules/.bin/electron ./fcuMaster",
     "install": "./node_modules/.bin/electron-rebuild",
     "fcuMaster": "./node_modules/.bin/electron ./fcuMaster",
     "fcuTester": "./node_modules/.bin/electron ./fcuTester",
