@@ -2,30 +2,47 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>FCU Master</title>
+    <meta charset="UTF-8">
+    <title>FCU Master</title>
+
+    <style>
+        .unit-box {
+            margin: 8px;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+
+
 </head>
 
 <body>
+    <div>version 1.2</div>
+    <div class="unit-box">
+        <p> = 디바이스 리스트 = </p>
+        <ul id='portList'></ul>
+        <button id="btn-connect"> connect</button>
+        <button id="btn-close" class="hide">close</button>
 
+        <div id="device-info" class="unit-box">
+            <p id="select-device-name"></p>
+            <!-- <p> - device - </p>
+            <p class="fct"></p>
+        </div> -->
+        </div>
 
-  <div>
-    <ul id='portList'></ul>
-  </div>
+    </div>
 
-  <div>
-    <p id="select-device-name"></p>
-    <button id="btn-connect" disabled=true>connect</button>
-    <button id="btn-close" disabled=true>close</button>
-  </div>
+    <div class='unit-box'>
 
-  <div id="device-info">
-    <p class="fct" ></p>
-  </div>
-
-
-  <div>
-    <div id="fire-pwm">
+        <div class="unit-box">
+            <p id='info-text'>
+            </p>
+            <!-- <div id="fire-pwm">
       <p>출력 전압(%)</p>
       <input>
       <button class="btn-save">save</button>
@@ -41,16 +58,15 @@
       <p>강하 기울기</p>
       <input>
       <button class="btn-save">save</button>
-    </div>
+    </div> -->
 
-    <div id="cutoff-term">
-      <p>컷오프 딜레이(ms)</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div>
+            <div id="cutoff-term">
+                <p>pulse size(ms)</p>
+                <input>
+            </div>
 
 
-    <div id="startup-recover-tick">
+            <!-- <div id="startup-recover-tick">
       <p>시작 복구기동 타이밍(ms)</p>
       <input>
       <button class="btn-save">save</button>
@@ -60,32 +76,33 @@
       <p>프론트스테핑 타이밍(ms)</p>
       <input>
       <button class="btn-save">save</button>
-    </div>
+    </div> -->
 
-    <div id="downpluse-term">
-      <p>쿨타임(ms)</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div>
+            <div id="downpluse-term">
+                <p> 트리거 지연시간 (ms) <span>(150ms 이상 권장)</span> </p>
+                <input>
+            </div>
+            <div id="bullet-capacity">
+                <p> 장탄수 </p>
+                <input>
+            </div>
 
-    <div>
-      <button id="btn-default"> 설정 초기화 </button>
-    </div>
+            <div id='main-menu' class="unit-box">
+                <p class="info-text" ></p>
+                <button id="btn-save">save</button>
+                <button id="btn-default"> 설정 초기화 </button>
+            </div>
 
-  </div>
+            <div id="hide-menu" class="hide" >
+                wait....
+            </div>
 
+        </div>
 
-  <div style="display: none">
-    <!--All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js
-    <script>document.write(process.versions.node)</script>, Chromium
-    <script>document.write(process.versions.chrome)</script>, and Electron
-    <script>document.write(process.versions.electron)</script>.
-  </div>
+        <!-- <script src="renderer.js"></script> -->
 
-  <script src="index.js">
-
-  </script>
+        <script src="index.js" type="module" >
+        </script>
 </body>
 
 </html>

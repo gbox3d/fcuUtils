@@ -11,9 +11,15 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({
+    width: 800, height: 600,
+    webPreferences: {
+      nodeIntegration: true
+      //preload: path.join(__dirname, 'preload.js')
+    }
+  })
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -33,6 +39,8 @@ function createWindow () {
     mainWindow = null
   })
 }
+
+app.allowRendererProcessReuse=false
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -56,9 +64,11 @@ app.on('activate', function () {
   }
 })
 
-app.on("browser-window-created",function(e,window) {
+app.on("browser-window-created", function (e, window) {
   //window.setMenu(null);
-  });
+});
+
+
 
 
 // In this file you can include the rest of your app's specific main process
