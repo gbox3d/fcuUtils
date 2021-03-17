@@ -17,11 +17,13 @@
         }
     </style>
 
+<script defer src="index.js" type="module" > </script>
+
 
 </head>
 
 <body>
-    <div>version 1.2</div>
+    <div>version 1.3 (13번 final)</div>
     <div class="unit-box">
         <p> = 디바이스 리스트 = </p>
         <ul id='portList'></ul>
@@ -42,41 +44,16 @@
         <div class="unit-box">
             <p id='info-text'>
             </p>
-            <!-- <div id="fire-pwm">
-      <p>출력 전압(%)</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div>
-
-    <div id="power-down-tick">
-      <p>강하 시점(ms)</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div>
-
-    <div id="power-down-delta">
-      <p>강하 기울기</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div> -->
+            
+            <div id="fire-pwm">
+                <p>전압 보정값(0~255)</p>
+                <input>
+            </div>
 
             <div id="cutoff-term">
                 <p>pulse size(ms)</p>
                 <input>
             </div>
-
-
-            <!-- <div id="startup-recover-tick">
-      <p>시작 복구기동 타이밍(ms)</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div>
-
-    <div id="front-stepping-term">
-      <p>프론트스테핑 타이밍(ms)</p>
-      <input>
-      <button class="btn-save">save</button>
-    </div> -->
 
             <div id="downpluse-term">
                 <p> 트리거 지연시간 (ms) <span>(150ms 이상 권장)</span> </p>
@@ -101,8 +78,7 @@
 
         <!-- <script src="renderer.js"></script> -->
 
-        <script src="index.js" type="module" >
-        </script>
+        
 </body>
 
 </html>
