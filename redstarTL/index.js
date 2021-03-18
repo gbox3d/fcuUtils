@@ -19,46 +19,36 @@ var theApp = {
 }
 
 
-
-serialport.list().then(
-    ports => {
-        ports.forEach(port => {
-            let _li = document.createElement('li');
-            _li.innerText = port.comName + "(" + port.manufacturer + ")";
-            _li.comName = port.comName;
-
-            document.querySelector('#portList').appendChild(_li);
-
-        })
-    },
-    err => console.error(err)
-)
-
-
 function _dumpConfigAll(resolve, reject) {
     theApp.resBuffer = "";
     theApp.resCallback = function (_objres) {
 
         console.log(_objres)
 
+        theApp.resCallback = null;
+        _objres.result = 'ok'
+        resolve(_objres)
 
-        if (_objres.c !== undefined && _objres.c == 'cr') {
-            console.log('cr cmd ok')
-        } else {
-            theApp.resCallback = null;
-            _objres.result = 'ok'
-            resolve(_objres)
-        }
-        
+
+        // if (_objres.c !== undefined && _objres.c == 'cr') {
+        //     console.log('cmd ok')
+        // } else {
+        //     theApp.resCallback = null;
+        //     _objres.result = 'ok'
+        //     resolve(_objres)
+        // }
+
     }
 
-    let _cmd = { c: "cr" };
-    theApp.spObj.write(JSON.stringify(_cmd), function (err) {
-        if (err) {
-            console.log(err);
-            reject({ result: 'err', err: err });
-        }
-    });
+    _sendCmd('<rdconf>\r\n')
+
+    // let _cmd = { c: "cr" };
+    // theApp.spObj.write(JSON.stringify(_cmd), function (err) {
+    //     if (err) {
+    //         console.log(err);
+    //         reject({ result: 'err', err: err });
+    //     }
+    // });
 
 }
 
@@ -80,85 +70,78 @@ function _sendCmd(_cmd) {
 
 }
 
+function _updateConfigDataFormUI() {
+
+    delete theApp.configData.result;
+
+    let _configData = theApp.configData
+
+    _configData.ssid = document.querySelector('#ssid input').value;
+    _configData.passwd = document.querySelector('#passwd input').value;
+    _configData.index = document.querySelector('#group-index input').value;
+    _configData.remoteIp = document.querySelector('#remote-ip input').value
+    _configData.remotePort = document.querySelector('#remote-port input').value
+    _configData.localPort = document.querySelector('#local-port input').value
+
+    _configData.loopDelay_req = document.querySelector('#loop-delay-req input').value
+    _configData.loopDelay_res = document.querySelector('#loop-delay-res input').value
+
+    _configData.trigger_delay = document.querySelector('#trigger-delay input').value
+    _configData.relay_pluse = document.querySelector('#relay-pulse input').value
+
+    _configData.max_fire_count = document.querySelector('#max-fire-count input').value
+    _configData.extra = document.querySelector('#extra-info input').value
+}
+
 async function _loadformDevice() {
 
     let _res = await new Promise(_dumpConfigAll);
 
     if (_res.result == 'ok') {
-        document.querySelector("#cutoff-term input").value = _res.cth / 1000;
-        document.querySelector("#downpluse-term input").value = _res.pd / 1000;
-        document.querySelector('#bullet-capacity input').value = _res.fst;
 
-        document.querySelector("#btn-close").classList.remove("hide");
+        console.log(_res);
+
+        document.querySelector('#ssid input').value = _res.ssid
+        document.querySelector('#passwd input').value = _res.passwd
+        document.querySelector('#group-index input').value = _res.index;
+        document.querySelector('#remote-ip input').value = _res.remoteIp;
+        document.querySelector('#remote-port input').value = _res.remotePort;
+        document.querySelector('#local-port input').value = _res.localPort;
+
+        document.querySelector('#loop-delay-req input').value = _res.loopDelay_req;
+        document.querySelector('#loop-delay-res input').value = _res.loopDelay_res;
+
+        document.querySelector('#trigger-delay input').value = _res.trigger_delay
+        document.querySelector('#relay-pulse input').value = _res.relay_pluse
+
+        document.querySelector('#max-fire-count input').value = _res.max_fire_count
+        document.querySelector('#extra-info input').value = _res.extra
+
+        theApp.configData = _res;
 
     } else {
         theApp.doms.indo_text.textContent = '펌웨어가 응답하지않습니다.'
     }
 }
 
-/*
-document.querySelector("#fire-pwm .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({ c: "cs", p1: "fpw", p2: Math.round(this.parentElement.querySelector('input').value / 100 * 255) });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
 
-document.querySelector("#downpluse-term .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({ c: "cs", p1: "pd", p2: parseInt(this.parentElement.querySelector('input').value) });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
+// //startup
+// (async function _() {
 
+//     serialport.list().then(
+//         ports => {
+//             ports.forEach(port => {
+//                 let _li = document.createElement('li');
+//                 _li.innerText = port.comName + "(" + port.manufacturer + ")";
+//                 _li.comName = port.comName;
 
-document.querySelector("#power-down-tick .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({ c: "cs", p1: "pdt", p2: parseInt(this.parentElement.querySelector('input').value) * 1000 });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
+//                 document.querySelector('#portList').appendChild(_li);
 
-document.querySelector("#power-down-delta .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({
-        c: "cs",
-        p1: "pdd",
-        p2: parseInt(this.parentElement.querySelector('input').value)
-    });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
-
-document.querySelector("#cutoff-term .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({
-        c: "cs",
-        p1: "cth",
-        p2: parseInt(this.parentElement.querySelector('input').value) * 1000
-    });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
-
-document.querySelector("#startup-recover-tick .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({
-        c: "cs",
-        p1: "sta",
-        p2: parseInt(this.parentElement.querySelector('input').value) * 1000
-    });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
-
-document.querySelector("#front-stepping-term .btn-save").addEventListener('click', function(evt) {
-    let _cmd = JSON.stringify({
-        c: "cs",
-        p1: "fst",
-        p2: parseInt(this.parentElement.querySelector('input').value) * 1000
-    });
-    _cmd += JSON.stringify({ c: "svcfg" });
-    _sendCmd(_cmd)
-})
-
-*/
-
-
+//             })
+//         },
+//         err => console.error(err)
+//     )
+// })()
 
 //----------------------------------------------------------------
 //핸들러
@@ -177,104 +160,100 @@ document.querySelector("#btn-connect").addEventListener('click', async function 
         alert('device 를 선택해 주세요.')
         return
     }
-    // this.disabled = true;ㄴ
-    document.querySelector("#btn-connect").classList.add("hide");
-    theApp.doms.indo_text.textContent = '디바이스 접속중.....'
+
+    try {
+
+        document.querySelector("#btn-connect").classList.add("hide");
+        document.querySelector("#btn-close").classList.remove("hide");
+
+        theApp.doms.indo_text.textContent = '디바이스 접속중.....'
 
 
-    let serialportObj = new serialport(
-        theApp.SerialDeviceName, theApp.spConfig
-    );
-    theApp.spObj = serialportObj;
+        let serialportObj = new serialport(
+            theApp.SerialDeviceName, theApp.spConfig
+        );
+        theApp.spObj = serialportObj;
 
-    let parser = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
+        let parser = serialportObj.pipe(new Readline({ delimiter: '\r\n' }))
 
 
-    serialportObj.on('close', () => {
-        console.log('close')
+        serialportObj.on('close', () => {
+            console.log('close')
 
-        //close call back
-        if (theApp.cbSerialClose) {
-            theApp.cbSerialClose()
-        }
-
-    })
-
-    parser.on('data', function (data) {
-
-        console.log(data)
-
-        data.split('}').forEach(_ => {
-
-            if (_.indexOf('{') == 0) {
-                let _objres = JSON.parse(_ + '}');
-
-                // if (_objres.tm != undefined) {
-                //     document.querySelector("#device-info .fct").innerText = _objres.tm / 1000;
-                // }
-                if (theApp.resCallback)
-                    theApp.resCallback(_objres);
-
+            //close call back
+            if (theApp.cbSerialClose) {
+                theApp.cbSerialClose()
             }
+
         })
 
-        // let _objres = JSON.parse(data);
-        // if (theApp.resCallback)
-        //     theApp.resCallback(_objres);
+        parser.on('data', function (data) {
 
+            console.log(data)
 
+            data.split('}').forEach(_ => {
 
-    });
+                if (_.indexOf('{') == 0) {
+                    let _objres = JSON.parse(_ + '}');
 
+                    // if (_objres.tm != undefined) {
+                    //     document.querySelector("#device-info .fct").innerText = _objres.tm / 1000;
+                    // }
+                    if (theApp.resCallback)
+                        theApp.resCallback(_objres);
 
-    let _res = await new Promise((resolve, reject) => {
-        serialportObj.on("open", function (evt) {
-
-            console.log('open at baudrate :' + theApp.spConfig.baudRate);
-
-            // setTimeout(_dumpConfigAll.bind(this), 2000)
-
-            // //데이터 읽기
-            // this.on('data', function(data) {
-
-            // });
-
-
-            theApp.resBuffer = "";
-            let _time = setTimeout(() => {
-                reject({ err: 'timeout' })
-            }, 5000)
-            theApp.resCallback = function (_objres) {
-                console.log(_objres)
-                clearTimeout(_time)
-                if (_objres.r === 'version') {
-                    theApp.resCallback = null
-                    resolve(_objres)
                 }
-            }
+            })
+
+            // let _objres = JSON.parse(data);
+            // if (theApp.resCallback)
+            //     theApp.resCallback(_objres);
+
+
+
         });
 
-    })
+        let _res = await new Promise((resolve, reject) => {
 
-    if (_res.err === undefined) {
-        theApp.doms.indo_text.textContent = `firm tye :  ${_res.p1[0]} , firm version : ${_res.p1[1]}`
-    } else {
-        theApp.doms.indo_text.textContent = 'conection failed'
+            serialportObj.on("open", async (evt) => {
+
+                console.log('open at baudrate :' + theApp.spConfig.baudRate);
+                theApp.resBuffer = "";
+                let _time = setTimeout(() => {
+                    reject({ err: 'timeout' })
+                }, 5000)
+
+                theApp.resCallback = function (_objres) {
+                    console.log(_objres)
+                    clearTimeout(_time)
+                    theApp.resCallback = null
+                    resolve(_objres)
+                    // if (_objres.r === 'version') {
+                    //     theApp.resCallback = null
+                    //     resolve(_objres)
+                    // }
+                }
+
+                let _res = await _sendCmd("<rdsys>\r\n");
+                console.log(_res)
+
+            });
+        })
+
+        if (_res.err === undefined) {
+            theApp.doms.indo_text.textContent = `firm tye :  ${_res.type} , firm version : ${_res.v}, devid : ${_res.devid}`
+        } else {
+            theApp.doms.indo_text.textContent = 'conection failed'
+        }
+
+        _loadformDevice()
+
     }
-
-    _loadformDevice()
-
-    // _res = await new Promise(_dumpConfigAll);
-
-    // if (_res.result == 'ok') {
-    //     document.querySelector("#cutoff-term input").value = _res.cth / 1000;
-    //     document.querySelector("#downpluse-term input").value = _res.pd / 1000;
-
-    //     document.querySelector("#btn-close").classList.remove("hide");
-
-    // } else {
-    //     theApp.doms.indo_text.textContent = '펌웨어가 응답하지않습니다.'
-    // }
+    catch (e) {
+        alert(e.err)
+        document.querySelector("#btn-connect").classList.remove("hide");
+        document.querySelector("#btn-close").classList.add("hide");
+    }
 });
 
 document.querySelector('#btn-close').addEventListener('click', async () => {
@@ -296,8 +275,12 @@ document.querySelector('#btn-close').addEventListener('click', async () => {
 
     if (_res.r == 'ok') {
         theApp.doms.indo_text.textContent = 'conection closed'
-        document.querySelector("#cutoff-term input").value = ''
-        document.querySelector("#downpluse-term input").value = ''
+
+        //UI내용 모두 지우기
+        document.querySelectorAll('.config-form input').forEach(_ => {
+            _.value = ''
+        })
+
         document.querySelector("#btn-close").classList.add("hide");
         document.querySelector("#btn-connect").classList.remove("hide");
 
@@ -313,43 +296,33 @@ document.querySelector('#btn-close').addEventListener('click', async () => {
 
 document.querySelector('#btn-save').addEventListener('click', async function (evt) {
 
-
-    document.querySelector('#hide-menu').classList.remove("hide");
-    document.querySelector('#main-menu').classList.add('hide');
-    
-
     try {
-        await new Promise(async (resolve, reject) => {
+        document.querySelector('#hide-menu').classList.remove("hide");
+        document.querySelector('#main-menu').classList.add('hide');
+
+
+        let _res = await new Promise(async (resolve, reject) => {
 
             theApp.resCallback = (_objres) => {
-                if (_objres.c === 'svcfg') {
-                    console.log('cmd ok');
-                    resolve();
-                }
+                // console.log(_objres)
+                resolve(_objres)
             }
-    
-            let _cmd = JSON.stringify({ c: "cs", p1: "cth", p2: parseInt(document.querySelector('#cutoff-term input').value) * 1000 }) +
-                JSON.stringify({ c: "cs", p1: "pd", p2: parseInt(document.querySelector('#downpluse-term input').value) * 1000 }) + 
-                JSON.stringify({ c: "cs", p1: "fst", p2: parseInt(document.querySelector('#bullet-capacity input').value) })
-    
-            _cmd += JSON.stringify({ c: "svcfg" });
-            await _sendCmd(_cmd)
+            _updateConfigDataFormUI()
+            let _data = JSON.stringify(theApp.configData)
+            console.log(_data);
+            _sendCmd(`<wrconf>\r\n${_data}\r\n`)
         })
-    
-        console.log('save ok')
-        alert('save ok')
+        console.log(_res)
+        alert(_res.r)
+
+        document.querySelector('#hide-menu').classList.add("hide");
+        document.querySelector('#main-menu').classList.remove('hide');
 
     }
     catch (e) {
         alert('save err')
         console.log(e)
     }
-    
-
-
-    document.querySelector('#hide-menu').classList.add("hide");
-    document.querySelector('#main-menu').classList.remove('hide');
-
 
 })
 
@@ -358,26 +331,61 @@ document.querySelector("#btn-default").addEventListener('click', async function 
     document.querySelector('#hide-menu').classList.remove("hide");
     document.querySelector('#main-menu').classList.add('hide');
 
-    await new Promise(async (resolve, reject) => {
+    await _sendCmd('<format>\r\n')
 
-        theApp.resCallback = (_objres) => {
-            if (_objres.c === 'svcfg') {
-                console.log('cmd ok');
-                resolve();
-            }
-        }
+    setTimeout( function() {
+        location.reload()
+    },3000)
+    
+    // await new Promise(async (resolve, reject) => {
 
-        let _cmd = JSON.stringify({ c: "clcfg" });
-        _cmd += JSON.stringify({ c: "svcfg" });
-        _sendCmd(_cmd)
-    })
+    //     theApp.resCallback = (_objres) => {
+    //         if (_objres.c === 'svcfg') {
+    //             console.log('cmd ok');
+    //             resolve();
+    //         }
+    //     }
 
-    _loadformDevice()
+    //     let _cmd = JSON.stringify({ c: "clcfg" });
+    //     _cmd += JSON.stringify({ c: "svcfg" });
+    //     _sendCmd(_cmd)
+    // })
 
-    document.querySelector('#hide-menu').classList.add("hide");
-    document.querySelector('#main-menu').classList.remove('hide');
+    // _loadformDevice()
+
+    // document.querySelector('#hide-menu').classList.add("hide");
+    // document.querySelector('#main-menu').classList.remove('hide');
 
 
-    // alert('load default')
+    // // alert('load default')
 
 });
+
+
+
+
+//start up code 
+(async function () {
+
+    try {
+        let _ports = await serialport.list()
+
+        _ports.forEach(port => {
+            let _li = document.createElement('li');
+            _li.innerText = port.comName + "(" + port.manufacturer + ")";
+            _li.comName = port.comName;
+
+            document.querySelector('#portList').appendChild(_li);
+
+        })
+
+        console.log(_ports)
+
+    }
+    catch (e) {
+        console.log(e)
+        alert('can not get list')
+    }
+
+})();
+
