@@ -86,10 +86,14 @@ function _updateConfigDataFormUI() {
     _configData.loopDelay_req = document.querySelector('#loop-delay-req input').value
     _configData.loopDelay_res = document.querySelector('#loop-delay-res input').value
 
-    _configData.trigger_delay = document.querySelector('#trigger-delay input').value
-    _configData.relay_pluse = document.querySelector('#relay-pulse input').value
-
-    _configData.max_fire_count = document.querySelector('#max-fire-count input').value
+    if(theApp.firmType == 'OT1D1') {
+        _configData.sensor_cooltime = document.querySelector('#sensor-cooltime input').value
+    }
+    else {
+        _configData.trigger_delay = document.querySelector('#trigger-delay input').value
+        _configData.relay_pluse = document.querySelector('#relay-pulse input').value
+        _configData.max_fire_count = document.querySelector('#max-fire-count input').value
+    }
     _configData.extra = document.querySelector('#extra-info input').value
 }
 
@@ -111,10 +115,21 @@ async function _loadformDevice() {
         document.querySelector('#loop-delay-req input').value = _res.loopDelay_req;
         document.querySelector('#loop-delay-res input').value = _res.loopDelay_res;
 
-        document.querySelector('#trigger-delay input').value = _res.trigger_delay
-        document.querySelector('#relay-pulse input').value = _res.relay_pluse
+        if(theApp.firmType == 'OT1D1') {
+            document.querySelector('#sensor-cooltime').classList.remove('hide')
+            document.querySelector('#sensor-cooltime input').value = _res.sensor_cooltime
+            
+        }
+        else {
+            document.querySelector('#trigger-delay').classList.remove('hide')
+            document.querySelector('#relay-pulse').classList.remove('hide')
+            document.querySelector('#max-fire-count').classList.remove('hide')
 
-        document.querySelector('#max-fire-count input').value = _res.max_fire_count
+            document.querySelector('#trigger-delay input').value = _res.trigger_delay
+            document.querySelector('#relay-pulse input').value = _res.relay_pluse
+            document.querySelector('#max-fire-count input').value = _res.max_fire_count
+        }
+        
         document.querySelector('#extra-info input').value = _res.extra
 
         theApp.configData = _res;
@@ -124,24 +139,6 @@ async function _loadformDevice() {
     }
 }
 
-
-// //startup
-// (async function _() {
-
-//     serialport.list().then(
-//         ports => {
-//             ports.forEach(port => {
-//                 let _li = document.createElement('li');
-//                 _li.innerText = port.comName + "(" + port.manufacturer + ")";
-//                 _li.comName = port.comName;
-
-//                 document.querySelector('#portList').appendChild(_li);
-
-//             })
-//         },
-//         err => console.error(err)
-//     )
-// })()
 
 //----------------------------------------------------------------
 //핸들러
@@ -228,10 +225,6 @@ document.querySelector("#btn-connect").addEventListener('click', async function 
                     clearTimeout(_time)
                     theApp.resCallback = null
                     resolve(_objres)
-                    // if (_objres.r === 'version') {
-                    //     theApp.resCallback = null
-                    //     resolve(_objres)
-                    // }
                 }
 
                 let _res = await _sendCmd("<rdsys>\r\n");
@@ -242,6 +235,7 @@ document.querySelector("#btn-connect").addEventListener('click', async function 
 
         if (_res.err === undefined) {
             theApp.doms.indo_text.textContent = `firm tye :  ${_res.type} , firm version : ${_res.v}, devid : ${_res.devid}`
+            theApp.firmType = _res.type
         } else {
             theApp.doms.indo_text.textContent = 'conection failed'
         }
@@ -337,28 +331,6 @@ document.querySelector("#btn-default").addEventListener('click', async function 
         location.reload()
     },3000)
     
-    // await new Promise(async (resolve, reject) => {
-
-    //     theApp.resCallback = (_objres) => {
-    //         if (_objres.c === 'svcfg') {
-    //             console.log('cmd ok');
-    //             resolve();
-    //         }
-    //     }
-
-    //     let _cmd = JSON.stringify({ c: "clcfg" });
-    //     _cmd += JSON.stringify({ c: "svcfg" });
-    //     _sendCmd(_cmd)
-    // })
-
-    // _loadformDevice()
-
-    // document.querySelector('#hide-menu').classList.add("hide");
-    // document.querySelector('#main-menu').classList.remove('hide');
-
-
-    // // alert('load default')
-
 });
 
 
