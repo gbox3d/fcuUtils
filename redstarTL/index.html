@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>RedStar TL</title>
+
+    <style>
+        .unit-box {
+            margin: 8px;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div>version 1.2</div>
+    <div class="unit-box">
+        <p> = 디바이스 리스트 = </p>
+        <ul id='portList'></ul>
+        <button id="btn-connect"> connect</button>
+        <button id="btn-close" class="hide">close</button>
+
+        <div id="device-info" class="unit-box">
+            <p id="select-device-name"></p>
+            <!-- <p> - device - </p>
+            <p class="fct"></p>
+        </div> -->
+        </div>
+
+    </div>
+
+    <div class='unit-box'>
+
+        <div class="unit-box">
+            <p id='info-text'></p>
+
+            <div id="ssid">
+                <p>ssid</p>
+                <input>
+            </div>
+            <div id="passwd">
+                <p>passwd</p>
+                <input>
+            </div>
+            <div id="group-index">
+                <p> group index</p>
+                <input>
+            </div>
+
+            <div id="remote-ip">
+                <p>remote ip</p>
+                <input>
+            </div>
+
+            <div id="remote-port">
+                <p>remote port</p>
+                <input>
+            </div>
+
+            <div id="loop-delay-req">
+                <p>loop delay request</p>
+                <input>
+            </div>
+            <div id="loop-delay-res">
+                <p>loop delay response</p>
+                <input>
+            </div>
+
+            <div id="trigger-delay">
+                <p>trigger delay</p>
+                <input>
+            </div>
+
+            <div id="trigger-pulse">
+                <p>trigger pulse</p>
+                <input>
+            </div>
+
+            <div id="max-fire-count">
+                <p>장탄수</p>
+                <input>
+            </div>
+
+            <div id="extra-info">
+                <p>extra</p>
+                <input>
+            </div>
+
+
+
+            
+            <div id='main-menu' class="unit-box">
+                <p class="info-text"></p>
+                <button id="btn-save">save</button>
+                <button id="btn-default"> 설정 초기화 </button>
+            </div>
+
+            <div id="hide-menu" class="hide">
+                wait....
+            </div>
+
+        </div>
+
+        <!-- <script src="renderer.js"></script> -->
+
+        <script src="index.js" type="module">
+        </script>
+</body>
+
+</html>

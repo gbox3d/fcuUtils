@@ -15,6 +15,7 @@
     "install": "./node_modules/.bin/electron-rebuild",
     "fcuMaster": "./node_modules/.bin/electron ./fcuMaster",
     "fcuTester": "./node_modules/.bin/electron ./fcuTester",
+    "redstarTL": "./node_modules/.bin/electron ./redstarTL",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1",
