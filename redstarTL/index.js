@@ -28,28 +28,8 @@ function _dumpConfigAll(resolve, reject) {
         theApp.resCallback = null;
         _objres.result = 'ok'
         resolve(_objres)
-
-
-        // if (_objres.c !== undefined && _objres.c == 'cr') {
-        //     console.log('cmd ok')
-        // } else {
-        //     theApp.resCallback = null;
-        //     _objres.result = 'ok'
-        //     resolve(_objres)
-        // }
-
     }
-
     _sendCmd('<rdconf>\r\n')
-
-    // let _cmd = { c: "cr" };
-    // theApp.spObj.write(JSON.stringify(_cmd), function (err) {
-    //     if (err) {
-    //         console.log(err);
-    //         reject({ result: 'err', err: err });
-    //     }
-    // });
-
 }
 
 function _sendCmd(_cmd) {
@@ -92,6 +72,9 @@ function _updateConfigDataFormUI() {
     else {
         _configData.trigger_delay = document.querySelector('#trigger-delay input').value
         _configData.relay_pluse = document.querySelector('#relay-pulse input').value
+        _configData.relay_pluse_limit = document.querySelector('#relay-pulse-limit input').value
+        _configData.control_pwm = document.querySelector("#control-pwm input").value
+
         _configData.max_fire_count = document.querySelector('#max-fire-count input').value
     }
     _configData.extra = document.querySelector('#extra-info input').value
@@ -116,17 +99,23 @@ async function _loadformDevice() {
         document.querySelector('#loop-delay-res input').value = _res.loopDelay_res;
 
         if(theApp.firmType == 'OT1D1') {
+            //오뚜기 타겟용 
             document.querySelector('#sensor-cooltime').classList.remove('hide')
             document.querySelector('#sensor-cooltime input').value = _res.sensor_cooltime
-            
         }
         else {
             document.querySelector('#trigger-delay').classList.remove('hide')
             document.querySelector('#relay-pulse').classList.remove('hide')
+            document.querySelector('#relay-pulse-limit').classList.remove('hide')
             document.querySelector('#max-fire-count').classList.remove('hide')
+            document.querySelector('#control-pwm').classList.remove('hide')
+            
 
             document.querySelector('#trigger-delay input').value = _res.trigger_delay
             document.querySelector('#relay-pulse input').value = _res.relay_pluse
+            document.querySelector('#relay-pulse-limit input').value = _res.relay_pluse_limit
+            document.querySelector('#control-pwm input').value = _res.control_pwm;
+            
             document.querySelector('#max-fire-count input').value = _res.max_fire_count
         }
         
