@@ -1,5 +1,7 @@
 const serialport = require('serialport');
 const Readline = require('@serialport/parser-readline')
+// import serialport from 'serialport';
+// import { Readline } from '@serialport/parser-readline'
 
 // console.log(serialport);
 

@@ -177,6 +177,7 @@ $RECYCLE.BIN/
 package-lock.json
 yarn.lock
 dist/
+out/
 
 release-builds/
 

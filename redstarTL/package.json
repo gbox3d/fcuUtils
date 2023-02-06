@@ -1,14 +1,24 @@
 {
-  "name": "fcuMaster",
+  "name": "redstar_tl",
   "version": "1.0.0",
   "description": "configurator for fcu master",
   "main": "./main.js",
-  "scripts": {
-    "package-mac": "npx electron-packager . --overwrite  --asar=false --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "npx electron-packager . fcumaster --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"fcu Master\"",
-    "package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "electron": "22.2.0",
+    "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
-    "serialport": "^9.0.6"
+    "electron-squirrel-startup": "^1.0.0",
+    "serialport": "^10.4.0"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   }
 }
