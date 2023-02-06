@@ -184,6 +184,7 @@ module.exports = {
 
                 document.querySelector("#btn-connect").classList.add("hide");
                 document.querySelector("#btn-close").classList.remove("hide");
+                document.querySelector("#btn-get-devid").classList.remove("hide");
 
                 theApp.doms.indo_text.textContent = '디바이스 접속중.....'
 
@@ -201,20 +202,6 @@ module.exports = {
                         let _res = JSON.parse(_data);
                         console.log(_res);
                         theApp.resCallback?.(_res);
-
-                        // if (_res.cmd == 'config') {
-                        //     theApp.doms.indo_text.textContent = '펌웨어 정보를 읽어오는중.....'
-                        //     _loadformDevice();
-                        // }
-                        // else if (_res.cmd == 'configAll') {
-                        //     theApp.doms.indo_text.textContent = '펌웨어 정보를 읽어오는중.....'
-                        //     _loadformDevice();
-                        // }
-                        // else if (_res.cmd == 'configSave') {
-                        //     theApp.doms.indo_text.textContent = '펌웨어 정보를 저장하는중.....'
-                        //     _loadformDevice();
-                        // }
-
                     }
                     // console.log(_data)
                 });
@@ -254,49 +241,16 @@ module.exports = {
                 })
                 theApp.cbSerialClose = null;
 
+                document.querySelector("#btn-get-devid").classList.add("hide");
                 document.querySelector("#btn-close").classList.add("hide");
                 document.querySelector("#btn-connect").classList.remove("hide");
+                
 
                 theApp.SerialDeviceName = ''
                 document.querySelector('#select-device-name').innerText = theApp.SerialDeviceName;
 
             }
 
-
-            // let _res = await new Promise((resolve, reject) => {
-
-            //     theApp.cbSerialClose = () => {
-            //         resolve({ r: 'ok' })
-            //         theApp.cbSerialClose = null;
-            //     }
-
-            //     // theApp.spObj.close(err => {
-            //     //     if (err) {
-            //     //         reject({ r: 'err:', err: err })
-            //     //     }
-            //     // });
-
-            // });
-
-            // if (_res.r == 'ok') {
-            //     theApp.doms.indo_text.textContent = 'conection closed'
-
-            //     //UI내용 모두 지우기
-            //     document.querySelectorAll('.config-form input').forEach(_ => {
-            //         _.value = ''
-            //     })
-
-            //     document.querySelector("#btn-close").classList.add("hide");
-            //     document.querySelector("#btn-connect").classList.remove("hide");
-
-            //     theApp.SerialDeviceName = ''
-            //     document.querySelector('#select-device-name').innerText = theApp.SerialDeviceName;
-
-
-            // }
-            // else {
-            //     theApp.doms.indo_text.textContent = 'clode failed'
-            // }
         })
 
         document.querySelector('#btn-save').addEventListener('click', async function (evt) {
@@ -336,6 +290,30 @@ module.exports = {
 
         })
 
+        document.querySelector('#btn-get-devid').addEventListener('click', async function (evt) {
+
+            try {
+                
+                let _res = await new Promise(async (resolve, reject) => {
+
+                    theApp.resCallback = (_objres) => {
+                        // console.log(_objres)
+                        resolve(_objres)
+                    }
+                    _sendCmd('<rdsys>\r\n')
+                })
+                console.log(_res)
+                alert(`devid:${_res.devid},version:${_res.v},type : ${_res.type}`)
+
+
+            }
+            catch (e) {
+                alert('getdevid err')
+                console.log(e)
+            }
+
+        })
+
         document.querySelector("#btn-default").addEventListener('click', async function (evt) {
 
             document.querySelector('#hide-menu').classList.remove("hide");
@@ -355,16 +333,9 @@ module.exports = {
 
             const portListElement = document.querySelector('#portList')
 
-            //clear list element
-            while (portListElement.firstChild) {
-                portListElement.removeChild(portListElement.firstChild);
-            }
-
-            ipcRenderer.on('get-serialport-list-reply', (event, arg) => {
+            ipcRenderer.once('get-serialport-list-reply', (event, arg) => {
                 console.log(arg)
-
                 const _ul = portListElement
-
                 arg.forEach((port) => {
                     const _li = document.createElement('li')
                     _li.innerHTML = port.path
