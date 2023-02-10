@@ -4,6 +4,8 @@
 // import { Readline } from '@serialport/parser-readline'
 // console.log(serialport);
 const { contextBridge, ipcRenderer } = require('electron')
+const os = require('os');
+const exec = require("child_process").exec;
 
 const theApp = {
     baud: 115200,
@@ -244,7 +246,7 @@ module.exports = {
                 document.querySelector("#btn-get-devid").classList.add("hide");
                 document.querySelector("#btn-close").classList.add("hide");
                 document.querySelector("#btn-connect").classList.remove("hide");
-                
+
 
                 theApp.SerialDeviceName = ''
                 document.querySelector('#select-device-name').innerText = theApp.SerialDeviceName;
@@ -293,7 +295,7 @@ module.exports = {
         document.querySelector('#btn-get-devid').addEventListener('click', async function (evt) {
 
             try {
-                
+
                 let _res = await new Promise(async (resolve, reject) => {
 
                     theApp.resCallback = (_objres) => {
@@ -324,6 +326,71 @@ module.exports = {
             setTimeout(function () {
                 location.reload()
             }, 3000)
+
+        });
+
+        document.querySelector("#btn-upload-firmware").addEventListener('click', async function (evt) {
+
+            // exec('pwd', {
+            //     cwd: '../'
+            //   }, function(error, stdout, stderr) {
+            //     // work with result
+            //   });
+
+            //const process = exec(`bash ../redstar_firmware/flash.sh /dev/tty.usbserial-1130 ../redstar_firmware/d1mini/egcs/egcsUnit.ino.bin`);
+
+            if (theApp.SerialDeviceName == '') {
+                alert('디바이스를 선택해주세요')
+                return;
+            }
+            else {
+
+                console.log(os.platform())
+                
+                if (os.platform() == 'win32') {
+                    const process = exec(`./flash.bat ${theApp.SerialDeviceName} ./d1mini/egcs/egcsUnit.ino.bin`,
+                        {
+                            cwd: '../redstar_firmware/'
+                        },);
+
+                    // 표준 출력
+                    process.stdout.on("data", function (data) {
+                        console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                    });
+
+                    // 표준 에러
+                    process.stderr.on("data", function (data) {
+                        console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                    });
+
+
+                }
+                else if (os.platform() == 'darwin') {
+                    const process = exec(`bash ./flash.sh ${theApp.SerialDeviceName}  ./d1mini/egcs/egcsUnit.ino.bin`,
+                    // const process = exec(`pwd`,
+                        {
+                            cwd: '../redstar_firmware/'
+                        },);
+
+                    // 표준 출력
+                    process.stdout.on("data", function (data) {
+                        console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                        document.querySelector('#upload-progress-msg').textContent = data.toString()
+                    });
+
+                    // 표준 에러
+                    process.stderr.on("data", function (data) {
+                        console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                        document.querySelector('#upload-progress-msg').textContent = data.toString()
+                    });
+                }
+
+            }
+
+
+
+
+
 
         });
 
