@@ -37,3 +37,14 @@ redstar_firmware 폴더를 redstarTL 폴더의 상위에 복사한다.
   +--redstar_firmware
 ```
 
+### 커멘트라인상으로 펌웨어 업로딩
+
+```bash
+cd redstar_firmware
+
+# mac or linux
+bash ./flash.sh /dev/tty.usbserial-1130 ./d1mini/egcs/egcsUnit.ino.bin
+
+# windows
+flash.bat COM3 d1mini\egcs\egcsUnit.ino.bin
+```
