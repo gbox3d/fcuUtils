@@ -1,0 +1,5 @@
+
+flash [포트번호] [펌웨어바이너리경로]
+
+t2d1 의 사용예>
+flash COM3 d1mini\egcs_t2d1\egcsUnit.ino.bin
