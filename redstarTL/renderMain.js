@@ -348,19 +348,22 @@ module.exports = {
                 console.log(os.platform())
                 
                 if (os.platform() == 'win32') {
-                    const process = exec(`./flash.bat ${theApp.SerialDeviceName} ./d1mini/egcs/egcsUnit.ino.bin`,
+                    const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1mini\\egcs\\egcsUnit.ino.bin`,
+                    //const process = exec(`dir`,
                         {
-                            cwd: '../redstar_firmware/'
+                            cwd: '..\\redstar_firmware\\'
                         },);
 
                     // 표준 출력
                     process.stdout.on("data", function (data) {
                         console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                        document.querySelector('#upload-progress-msg').textContent = data.toString()
                     });
 
                     // 표준 에러
                     process.stderr.on("data", function (data) {
                         console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                        document.querySelector('#upload-progress-msg').textContent = data.toString()
                     });
 
 
