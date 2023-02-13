@@ -181,3 +181,4 @@ out/
 
 release-builds/
 
+*.zip

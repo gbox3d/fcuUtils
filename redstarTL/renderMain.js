@@ -3,9 +3,12 @@
 // import serialport from 'serialport';
 // import { Readline } from '@serialport/parser-readline'
 // console.log(serialport);
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer,dialog, ipcMain } = require('electron')
 const os = require('os');
-const exec = require("child_process").exec;
+// const exec = require("child_process").exec;
+const { exec,spawn } = require("child_process");
+
+
 
 const theApp = {
     baud: 115200,
@@ -329,6 +332,18 @@ module.exports = {
 
         });
 
+        document.querySelector("#btn-select-firmware-path").addEventListener('click', async function (evt) {
+            
+            ipcRenderer.send('show-open-dialog')
+
+            ipcRenderer.on('show-open-dialog-reply', (event, path) => {
+                console.log(path)
+                document.querySelector('#firmware-path').innerText = `path : ${path}`
+                localStorage.setItem('firmware-path', path)
+            })
+
+        });
+
         document.querySelector("#btn-upload-firmware").addEventListener('click', async function (evt) {
 
             // exec('pwd', {
@@ -343,7 +358,15 @@ module.exports = {
                 alert('디바이스를 선택해주세요')
                 return;
             }
-            else {
+
+            const firmware_path = localStorage.getItem('firmware-path')
+
+            if (firmware_path == '') {
+                alert('펌웨어 경로를 입력해주세요')
+                return;
+            }
+            
+            {
 
                 console.log(os.platform())
                 
@@ -351,7 +374,7 @@ module.exports = {
                     const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1mini\\egcs\\egcsUnit.ino.bin`,
                     //const process = exec(`dir`,
                         {
-                            cwd: '..\\redstar_firmware\\'
+                            cwd: firmware_path
                         },);
 
                     // 표준 출력
@@ -369,13 +392,22 @@ module.exports = {
 
                 }
                 else if (os.platform() == 'darwin') {
-                    const process = exec(`bash ./flash.sh ${theApp.SerialDeviceName}  ./d1mini/egcs/egcsUnit.ino.bin`,
-                    // const process = exec(`pwd`,
-                        {
-                            cwd: '../redstar_firmware/'
-                        },);
 
-                    // 표준 출력
+                    const process = spawn('bash', ['./flash.sh', theApp.SerialDeviceName, './d1mini/egcs/egcsUnit.ino.bin'],
+                    // const process = spawn('pwd', [],
+                        {
+                            cwd: '/Users/gbox3d/Desktop/work/cronos/fcuUtils/redstar_firmware'
+                        }
+                    );
+
+                    // const process = exec(`bash ./flash.sh ${theApp.SerialDeviceName}  ./d1mini/egcs/egcsUnit.ino.bin`,
+                    // // const process = exec(`pwd`,
+                    //     {
+                    //         cwd: '../redstar_firmware/'
+                    //     },);
+
+
+                    //표준 출력
                     process.stdout.on("data", function (data) {
                         console.log(data.toString()); // 버퍼 형태로 전달됩니다.
                         document.querySelector('#upload-progress-msg').textContent = data.toString()
@@ -389,13 +421,13 @@ module.exports = {
                 }
 
             }
-
-
-
-
-
-
         });
+
+        if(localStorage.getItem("firmware-path") != null){
+            document.querySelector('#firmware-path').innerText = `path : ${localStorage.getItem("firmware-path")}`
+        }
+
+        // console.log(localStorage.getItem("firmware-path"))
 
         try {
 

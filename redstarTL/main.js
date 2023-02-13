@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow , ipcMain} = require('electron')
+const {app, BrowserWindow , ipcMai,dialog, ipcMain} = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -25,8 +25,20 @@ function createWindow () {
   //serialport setup
   require('./serial_electron.js')();
 
+  ipcMain.on('show-open-dialog', (event, arg) => {
+    dialog.showOpenDialog({ properties: ['openDirectory'] }).then(result => {
+      console.log(result.canceled)
+      console.log(result.filePaths)
+      event.reply('show-open-dialog-reply', result.filePaths)
+    }).catch(err => {
+      console.log(err)
+    })
+  })
+
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+
+  
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
