@@ -396,7 +396,7 @@ module.exports = {
                     const process = spawn('bash', ['./flash.sh', theApp.SerialDeviceName, './d1mini/egcs/egcsUnit.ino.bin'],
                     // const process = spawn('pwd', [],
                         {
-                            cwd: '/Users/gbox3d/Desktop/work/cronos/fcuUtils/redstar_firmware'
+                            cwd: firmware_path
                         }
                     );
 
