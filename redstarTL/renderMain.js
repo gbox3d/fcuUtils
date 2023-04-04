@@ -3,10 +3,10 @@
 // import serialport from 'serialport';
 // import { Readline } from '@serialport/parser-readline'
 // console.log(serialport);
-const { contextBridge, ipcRenderer,dialog, ipcMain } = require('electron')
+const { contextBridge, ipcRenderer, dialog, ipcMain } = require('electron')
 const os = require('os');
 // const exec = require("child_process").exec;
-const { exec,spawn } = require("child_process");
+const { exec, spawn } = require("child_process");
 
 
 
@@ -178,6 +178,9 @@ module.exports = {
 
         })
 
+
+
+
         document.querySelector("#btn-connect").addEventListener('click', async function (evt) {
 
             if (theApp.SerialDeviceName == '') {
@@ -333,7 +336,7 @@ module.exports = {
         });
 
         document.querySelector("#btn-select-firmware-path").addEventListener('click', async function (evt) {
-            
+
             ipcRenderer.send('show-open-dialog')
 
             ipcRenderer.on('show-open-dialog-reply', (event, path) => {
@@ -344,15 +347,14 @@ module.exports = {
 
         });
 
+        //select firmware
+        document.querySelector("#select-firmware").addEventListener('change', function (evt) {
+            console.log(evt.target.value);
+            theApp.firmware_select = evt.target.value;
+        });
+
+
         document.querySelector("#btn-upload-firmware").addEventListener('click', async function (evt) {
-
-            // exec('pwd', {
-            //     cwd: '../'
-            //   }, function(error, stdout, stderr) {
-            //     // work with result
-            //   });
-
-            //const process = exec(`bash ../redstar_firmware/flash.sh /dev/tty.usbserial-1130 ../redstar_firmware/d1mini/egcs/egcsUnit.ino.bin`);
 
             if (theApp.SerialDeviceName == '') {
                 alert('디바이스를 선택해주세요')
@@ -365,65 +367,111 @@ module.exports = {
                 alert('펌웨어 경로를 입력해주세요')
                 return;
             }
-            
+
             {
+                if (theApp.firmware_select == 'egcs-mini') {
 
-                console.log(os.platform())
-                
-                if (os.platform() == 'win32') {
-                    const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1mini\\egcs\\egcsUnit.ino.bin`,
-                    //const process = exec(`dir`,
-                        {
-                            cwd: firmware_path
-                        },);
+                    console.log(os.platform())
 
-                    // 표준 출력
-                    process.stdout.on("data", function (data) {
-                        console.log(data.toString()); // 버퍼 형태로 전달됩니다.
-                        document.querySelector('#upload-progress-msg').textContent = data.toString()
-                    });
+                    if (os.platform() == 'win32') {
+                        const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1mini\\egcs\\egcsUnit.ino.bin`,
+                            //const process = exec(`dir`,
+                            {
+                                cwd: firmware_path
+                            },);
 
-                    // 표준 에러
-                    process.stderr.on("data", function (data) {
-                        console.error(data.toString()); // 버퍼 형태로 전달됩니다.
-                        document.querySelector('#upload-progress-msg').textContent = data.toString()
-                    });
+                        // 표준 출력
+                        process.stdout.on("data", function (data) {
+                            console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+
+                        // 표준 에러
+                        process.stderr.on("data", function (data) {
+                            console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
 
 
+                    }
+                    else if (os.platform() == 'darwin') {
+
+                        const process = spawn('bash', ['./flash.sh', theApp.SerialDeviceName, './d1mini/egcs/egcsUnit.ino.bin'],
+                            // const process = spawn('pwd', [],
+                            {
+                                cwd: firmware_path
+                            }
+                        );
+
+                        // const process = exec(`bash ./flash.sh ${theApp.SerialDeviceName}  ./d1mini/egcs/egcsUnit.ino.bin`,
+                        // // const process = exec(`pwd`,
+                        //     {
+                        //         cwd: '../redstar_firmware/'
+                        //     },);
+
+
+                        //표준 출력
+                        process.stdout.on("data", function (data) {
+                            console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+
+                        // 표준 에러
+                        process.stderr.on("data", function (data) {
+                            console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+                    }
                 }
-                else if (os.platform() == 'darwin') {
+                else if(theApp.firmware_select == 'odg-mini') {
+                    if (os.platform() == 'win32') {
+                        const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1mini\\odg\\odgUnit.ino.bin`,
+                            {
+                                cwd: firmware_path
+                            },);
 
-                    const process = spawn('bash', ['./flash.sh', theApp.SerialDeviceName, './d1mini/egcs/egcsUnit.ino.bin'],
-                    // const process = spawn('pwd', [],
-                        {
-                            cwd: firmware_path
-                        }
-                    );
+                        // 표준 출력
+                        process.stdout.on("data", function (data) {
+                            console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
 
-                    // const process = exec(`bash ./flash.sh ${theApp.SerialDeviceName}  ./d1mini/egcs/egcsUnit.ino.bin`,
-                    // // const process = exec(`pwd`,
-                    //     {
-                    //         cwd: '../redstar_firmware/'
-                    //     },);
+                        // 표준 에러
+                        process.stderr.on("data", function (data) {
+                            console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
 
 
-                    //표준 출력
-                    process.stdout.on("data", function (data) {
-                        console.log(data.toString()); // 버퍼 형태로 전달됩니다.
-                        document.querySelector('#upload-progress-msg').textContent = data.toString()
-                    });
+                    }
+                    else if (os.platform() == 'darwin') {
 
-                    // 표준 에러
-                    process.stderr.on("data", function (data) {
-                        console.error(data.toString()); // 버퍼 형태로 전달됩니다.
-                        document.querySelector('#upload-progress-msg').textContent = data.toString()
-                    });
+                        const process = spawn('bash', ['./flash.sh', theApp.SerialDeviceName, './d1mini/odg/odgUnit.ino.bin'],
+                            // const process = spawn('pwd', [],
+                            {
+                                cwd: firmware_path
+                            }
+                        );
+
+                        //표준 출력
+                        process.stdout.on("data", function (data) {
+                            console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+
+                        // 표준 에러
+                        process.stderr.on("data", function (data) {
+                            console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+                    }
+
                 }
 
             }
         });
 
-        if(localStorage.getItem("firmware-path") != null){
+        if (localStorage.getItem("firmware-path") != null) {
             document.querySelector('#firmware-path').innerText = `path : ${localStorage.getItem("firmware-path")}`
         }
 
