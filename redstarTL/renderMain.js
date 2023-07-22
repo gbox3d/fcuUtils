@@ -423,6 +423,51 @@ module.exports = {
                         });
                     }
                 }
+                else if (theApp.firmware_select == 'egcs-pro') {
+                    if (os.platform() == 'win32') {
+                        const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1pro\\egcs\\egcsUnit.ino.bin`,
+                            //const process = exec(`dir`,
+                            {
+                                cwd: firmware_path
+                            },);
+
+                        // 표준 출력
+                        process.stdout.on("data", function (data) {
+                            console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+
+                        // 표준 에러
+                        process.stderr.on("data", function (data) {
+                            console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+
+
+                    }
+                    else if (os.platform() == 'darwin') {
+
+                        const process = spawn('bash', ['./flash.sh', theApp.SerialDeviceName, './d1pro/egcs/egcsUnit.ino.bin'],
+                            // const process = spawn('pwd', [],
+                            {
+                                cwd: firmware_path
+                            }
+                        );
+
+                        //표준 출력
+                        process.stdout.on("data", function (data) {
+                            console.log(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+
+                        // 표준 에러
+                        process.stderr.on("data", function (data) {
+                            console.error(data.toString()); // 버퍼 형태로 전달됩니다.
+                            document.querySelector('#upload-progress-msg').textContent = data.toString()
+                        });
+                    }
+
+                }
                 else if(theApp.firmware_select == 'odg-mini') {
                     if (os.platform() == 'win32') {
                         const process = exec(`flash.bat ${theApp.SerialDeviceName} .\\d1mini\\odg\\odgUnit.ino.bin`,
